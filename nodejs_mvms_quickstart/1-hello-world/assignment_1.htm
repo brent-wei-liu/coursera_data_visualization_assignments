@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+    <!-- Load c3.css -->
+    <link href="/c3js/c3.css" rel="stylesheet" type="text/css">
+    <!-- Load d3.js and c3.js -->
+    <script src="/d3.v3.min.js" charset="utf-8"></script>
+    <script src="/c3js/c3.min.js"></script>
+<style>
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img { 
+  max-width:100%; 
+  height: auto; 
+}
+
+
+</style>
+</head>
+<body>
+<div class="container-fluid main-container">
+
+
+<div id="header">
+<h1 class="title">Global temperatures</h1>
+<h4 class="author"><em>Wei Liu</em></h4>
+<h4 class="date"><em>11-08-2016</em></h4>
+</div>
+
+
+<div id="data-set" class="section level4">
+<h4>Data set</h4>
+<p>The data set provided deals with world temperatures and comes from NASA: <a href="http://data.giss.nasa.gov/gistemp/" class="uri">http://data.giss.nasa.gov/gistemp/</a>, in particular: from “Table Data: Global and Hemispheric Monthly Means and Zonal Annual Means.”.</p>
+<p>The original data set was modified by choosing only 4 variables:</p>
+<ul>
+<li>Year (independent variable)</li>
+<li>Deviation in temperatures for Nothern and Southern hemispheres and for the World as a whole (dependent variables).</li>
+</ul>
+</div>
+<div id="graph" class="section level4">
+<h4>Graph</h4>
+<p>The graph illustrates anomalies in temperatures from 1880 to 2015, measured globally and for Nothern and Southern hemispheres. In this version it shows <strong>moving average for 10 subsequent years</strong> for each dependent variable. This value can be easily changed through interaction (see below the information about possible interactions.)</p>
+<p>The anomalies in temperatures (Axis Y) indicate how much higher or lower was the temperature than it was normal for a given place and time. Here <em>normal</em> means the average temperature over the period from 1951-1980 (here referred as “Benchmark”). The units used here are Celsius degrees multiplied by 100.</p>
+<p>The Axis X shows year in which the anomaly was measured.</p>
+<p>For more details about GISTEMP see <a href="http://data.giss.nasa.gov/gistemp/FAQ.html">FAQ</a></p>
+<br>
+<div id="title" style="text-align: center;">
+<h3>
+Global temperature anomalies
+</h3>
+<div id="chart"></div>
+</div>
+</div>
+<div id="graph-interaction" class="section level4">
+<h4>Graph interaction</h4>
+<p>The graph is interactive. You may:</p>
+<ul>
+<li><p>Hover over ledged fields to see series highlighted</p></li>
+<li><p>Hover over lines to see values </p></li>
+</ul>
+<p>Enjoy!</p>
+</div>
+<div id="results" class="section level4">
+<h4>Results</h4>
+<p>The detailed discussion of results is out of scope of this programming assignment. However, some observations can be listed:</p>
+<ul>
+<li><p>In general, the average deviation increase in time in direction of higher warmth</p></li>
+<li><p>For the last 30 years this trend is stronger for the Nothern Hemisphere</p></li>
+</ul>
+</div>
+<div id="technology-used" class="section level4">
+<h4>Technology used</h4>
+<p>The graph was created with C3.js. If you are interested how exactly this was done, contact me with email brent.wei.liu@gmail.com</p>
+</div>
+<div id="references" class="section level4">
+<h4>References:</h4>
+<p><a href="http://c3js.org/">C3.js</a></p>
+<p>GISS Surface Temperature Analysis (GISTEMP). NASA Goddard Institute for Space Studies. Dataset accessed on 2016-07-31 from <a href="http://data.giss.nasa.gov/gistemp/tabledata_v3/ZonAnn.Ts+dSST.csv">Zonal annual means</a></p>
+</div>
+
+
+</div>
+
+
+
+<script>
+var chart = c3.generate({
+    bindto: '#chart',
+    data: {
+        x: 'Year',
+        url: '/ZonAnn.csv',
+        type: 'line'
+    },
+    tooltip: {
+        format: {
+            value: function(d) {
+                return 100*(d);
+            }
+        }
+    },
+    axis : {
+        x: {
+            label: {
+                text: 'Year',
+                position: 'outer-right'
+            }
+        },
+        y : {
+            tick: {
+                 format: function (d) {
+                    return parseInt(100*d); 
+                }
+            },
+            label: {
+                text: 'Deviation in temperature (in C x 100)',
+                position: 'outer-middle'
+            }
+        }
+    },
+    grid: {
+        y: { show: true },
+        x: { 
+             show: true,
+             lines: [
+                 {value: 1950, text: 'Benchmark Start'},
+                 {value: 1980, text: 'Benchmark End'},
+             ]
+           }
+    },
+    padding: { top: 0, }
+
+});
+
+</script>
+
+</body>
