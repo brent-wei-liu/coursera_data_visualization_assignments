@@ -23,6 +23,12 @@ app.get('/dv', function (req, res) {
 app.get('/assignment_1', function (req, res) {
    res.sendFile( __dirname + "/" + "assignment_1.htm" );
 })
+app.get('/assignment_2', function (req, res) {
+   res.sendFile( __dirname + "/assignment_2/assignment_2.htm" );
+})
+app.get('/dolphins.json', function (req, res) {
+   res.sendFile( __dirname + "/assignment_2/dolphins.json" );
+})
 
 // [START hello_world]
 // Say hello!
@@ -51,15 +57,6 @@ app.get('/c3js/c3.min.js', function (req, res) {
     res.status(200).send(data);
 });
 
-
-app.get('/data.tsv', function (req, res) {
-    var fs = require("fs");
-    // Synchronous read
-    var data = fs.readFileSync('data.tsv');
-
-  //res.status(200).send(data);
-  res.status(200).send("date\tclose\n24-Apr-07\t93.24\n");
-});
 
 app.get('/data.csv', function (req, res) {
     var fs = require("fs");

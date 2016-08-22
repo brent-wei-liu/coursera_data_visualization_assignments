@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<head>
+<meta charset="utf-8">
+<style>
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img { 
+  max-width:100%;                                                                                                                                                                 
+  height: auto; 
+}
+
+.links line {
+  stroke: #999;
+  stroke-opacity: 0.6;
+}
+
+.nodes circle {
+  stroke: #fff;
+  stroke-width: 1.5px;
+}
+
+text.nodelabel {
+    font-size: 60%;
+}
+</style>
+</head>
+<body>
+<div class="container-fluid main-container">
+
+<div id="header">
+<h1 class="title">Dolphin Social Network</h1>
+<h4 class="author"><em>Wei Liu</em></h4>
+<h4 class="date"><em>21-08-2016</em></h4>
+</div>
+
+
+<div id="data-set" class="section level4">
+<h4>Data set</h4>
+<p>The dataset was obtained at <a href="https://networkdata.ics.uci.edu/data.php?id=6">UCI Network Data Repository</a>. Original data source is D. Lusseau, K. Schneider, O. J. Boisseau, P. Haase, E. Slooten, and S. M. Dawson, Behavioral Ecology and Sociobiology 54, 396-405 (2003).</p>
+
+</div>
+<div id="graph" class="section level4">
+<h4>Graph</h4>
+<p>This is an undirected social network of frequent associations between 62 dolphins in a community living off Doubtful Sound, New Zealand.</p>
+<p>Size of nodes is proportional to the number of their edges. Nodes with 10 or more edges are green-coloured, nodes with 5-9 edges are blue-coloured, other nodes are brown. Despite some edges crossing each other we could clearly see two separate network clusters or dolphin groups. The first group is characterized by the most social active dolphins such as Trigger, Topless, Grin, SN4 and Scabs. The second is much less cohesive. None of its backbone nodes (dolphins) have more than 9 edges.</p>
+<div id="title" style="text-align: center;">
+<h3>
+Dolphin Social Network
+</h3>
+<svg width="940" height="500"></svg>
+</div>
+<div id="technology-used" class="section level4">
+<h4>Technology used</h4>
+<p>The graph was created with D3.js. If you are interested how exactly this was done, contact me with email brent.wei.liu@gmail.com</p>                                           
+</div>
+<div id="references" class="section level4">
+<h4>References:</h4>
+<p><a href="https://bl.ocks.org/mbostock/4062045">D3.js Force-Directed Graph</a></p>
+</div>
+
+
+</div>
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script>
+
+var svg = d3.select("svg"),
+    width = +svg.attr("width"),
+    height = +svg.attr("height");
+
+var color = d3.scaleOrdinal(d3.schemeCategory20);
+
+var simulation = d3.forceSimulation()
+    .force("link", d3.forceLink().id(function(d) { return d.id; }).distance(90).strength(1))
+    .force("charge", d3.forceManyBody())
+    .force("center", d3.forceCenter(width / 2, height / 2));
+
+d3.json("dolphins.json", function(error, graph) {
+  if (error) throw error;
+  graph.nodes.forEach(function(d) {
+        console.log(d.group);
+        var min = 3;
+        var tmp = Math.sqrt(15*d.group);  
+        d.r =  tmp > min ? tmp : min;
+  });
+
+  var link = svg.append("g")
+      .attr("class", "links")
+    .selectAll("line")
+    .data(graph.links)
+    .enter().append("line")
+      .attr("stroke-width", function(d) { return Math.sqrt(d.value); });
+
+  var g = svg.append("g")
+      .attr("class", "nodes");
+
+  var node = g.selectAll("circle")
+    .data(graph.nodes)
+    .enter().append("circle")
+      //.attr("r", 5)
+      .attr("r", function(d) { return d.r; })
+      .attr("fill", function(d) { 
+                        if(d.group >= 10)      return d3.rgb("#66aa00"); 
+                        else if(d.group >= 5)  return d3.rgb("#0099c6");
+                        else                   return d3.rgb("#ff7f0e");
+                    })
+      .call(d3.drag()
+          .on("start", dragstarted)
+          .on("drag", dragged)
+          .on("end", dragended));
+
+  node.append("title")
+      .text(function(d) { return d.id; });
+var nodelabels = g.selectAll(".nodelabel") 
+       .data(graph.nodes)
+       .enter()
+       .append("text")
+       .attr("class", "nodelabel")
+       .text(function(d){return d.id;});
+
+  simulation
+      .nodes(graph.nodes)
+      .on("tick", ticked);
+
+  simulation.force("link")
+      .links(graph.links);
+
+  function ticked() {
+    link
+        .attr("x1", function(d) { return d.source.x; })
+        .attr("y1", function(d) { return d.source.y; })
+        .attr("x2", function(d) { return d.target.x; })
+        .attr("y2", function(d) { return d.target.y; });
+
+    node
+        .attr("cx", function(d) { return d.x; })
+        .attr("cy", function(d) { return d.y; });
+
+    nodelabels
+        .attr("x", function(d) { return d.x + d.r; })
+        .attr("y", function(d) { return d.y - d.r; });
+  }
+});
+
+function dragstarted(d) {
+  if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+  d.fx = d.x;
+  d.fy = d.y;
+}
+
+function dragged(d) {
+  d.fx = d3.event.x;
+  d.fy = d3.event.y;
+}
+
+function dragended(d) {
+  if (!d3.event.active) simulation.alphaTarget(0);
+  d.fx = null;
+  d.fy = null;
+}
+
+</script>
+</body>
